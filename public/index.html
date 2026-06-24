@@ -21,7 +21,15 @@
           <div class="form-row">
             <div class="form-group">
               <label for="room">Room *</label>
-              <input type="text" id="room" placeholder="e.g., Kitchen, Bedroom, Bathroom" required>
+              <select id="room" multiple required>
+                <option value="">Select Room(s)</option>
+                <option value="Master Bedroom">Master Bedroom</option>
+                <option value="Children Bedroom">Children Bedroom</option>
+                <option value="Guest Bedroom">Guest Bedroom</option>
+                <option value="Kitchen">Kitchen</option>
+                <option value="Common Bath Room">Common Bath Room</option>
+                <option value="Attached Bath Room">Attached Bath Room</option>
+              </select>
             </div>
 
             <div class="form-group">
@@ -144,8 +152,16 @@
         <input type="hidden" id="editId">
         <div class="form-row">
           <div class="form-group">
-            <label for="editRoom">Room</label>
-            <input type="text" id="editRoom" required>
+            <label for="editRoom">Room *</label>
+            <select id="editRoom" multiple required>
+              <option value="">Select Room(s)</option>
+              <option value="Master Bedroom">Master Bedroom</option>
+              <option value="Children Bedroom">Children Bedroom</option>
+              <option value="Guest Bedroom">Guest Bedroom</option>
+              <option value="Kitchen">Kitchen</option>
+              <option value="Common Bath Room">Common Bath Room</option>
+              <option value="Attached Bath Room">Attached Bath Room</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="editCategory">Category</label>
