@@ -61,12 +61,26 @@ async function loadExpenses() {
   }
 }
 
+// Get selected rooms from multi-select dropdown
+function getSelectedRooms() {
+  const roomSelect = document.getElementById('room');
+  const selectedOptions = Array.from(roomSelect.selectedOptions);
+  return selectedOptions.map(option => option.value).join(', ');
+}
+
 // Add new expense
 async function addExpense(e) {
   e.preventDefault();
 
+  const selectedRooms = getSelectedRooms();
+  
+  if (!selectedRooms) {
+    showNotification('Please select at least one room', 'error');
+    return;
+  }
+
   const expense = {
-    room: document.getElementById('room').value,
+    room: selectedRooms,
     category: document.getElementById('category').value,
     item: document.getElementById('item').value,
     qty: parseInt(document.getElementById('qty').value),
@@ -101,8 +115,17 @@ async function updateExpense(e) {
   e.preventDefault();
 
   const id = document.getElementById('editId').value;
+  const editRoomSelect = document.getElementById('editRoom');
+  const selectedOptions = Array.from(editRoomSelect.selectedOptions);
+  const selectedRooms = selectedOptions.map(option => option.value).join(', ');
+
+  if (!selectedRooms) {
+    showNotification('Please select at least one room', 'error');
+    return;
+  }
+
   const expense = {
-    room: document.getElementById('editRoom').value,
+    room: selectedRooms,
     category: document.getElementById('editCategory').value,
     item: document.getElementById('editItem').value,
     qty: parseInt(document.getElementById('editQty').value),
@@ -157,7 +180,14 @@ function editExpense(id) {
   const expense = expenses.find(e => e.id === id);
   if (expense) {
     document.getElementById('editId').value = expense.id;
-    document.getElementById('editRoom').value = expense.room;
+    
+    // Set multi-select rooms
+    const editRoomSelect = document.getElementById('editRoom');
+    const selectedRooms = expense.room.split(', ').map(r => r.trim());
+    Array.from(editRoomSelect.options).forEach(option => {
+      option.selected = selectedRooms.includes(option.value);
+    });
+    
     document.getElementById('editCategory').value = expense.category;
     document.getElementById('editItem').value = expense.item;
     document.getElementById('editQty').value = expense.qty;
@@ -210,11 +240,15 @@ function displaySummary() {
   const summaryData = {};
 
   expenses.forEach(expense => {
-    if (!summaryData[expense.room]) {
-      summaryData[expense.room] = { total: 0, items: 0 };
-    }
-    summaryData[expense.room].total += expense.cost * expense.qty;
-    summaryData[expense.room].items += 1;
+    // Handle multiple rooms separated by comma
+    const rooms = expense.room.split(',').map(r => r.trim());
+    rooms.forEach(room => {
+      if (!summaryData[room]) {
+        summaryData[room] = { total: 0, items: 0 };
+      }
+      summaryData[room].total += expense.cost * expense.qty;
+      summaryData[room].items += 1;
+    });
   });
 
   // Sort by total cost descending
