@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Construction Expense Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏠 House Construction Expense Tracker</h1>
+      <p>Track your construction expenses by room and category</p>
+    </header>
+
+    <main>
+      <!-- Input Form Section -->
+      <section class="form-section">
+        <h2>Add New Expense</h2>
+        <form id="expenseForm" class="expense-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="room">Room *</label>
+              <input type="text" id="room" placeholder="e.g., Kitchen, Bedroom, Bathroom" required>
+            </div>
+
+            <div class="form-group">
+              <label for="category">Category *</label>
+              <select id="category" required>
+                <option value="">Select Category</option>
+                <option value="Flooring">Flooring</option>
+                <option value="Painting">Painting</option>
+                <option value="Electrical">Electrical</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Fixtures">Fixtures & Fittings</option>
+                <option value="Tiles">Tiles & Stones</option>
+                <option value="Doors & Windows">Doors & Windows</option>
+                <option value="Labor">Labor</option>
+                <option value="Material">Material</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="item">Item Description *</label>
+              <input type="text" id="item" placeholder="e.g., Ceramic Tiles, Paint Can, LED Lights" required>
+            </div>
+
+            <div class="form-group">
+              <label for="qty">Quantity *</label>
+              <input type="number" id="qty" min="1" placeholder="e.g., 5" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cost">Cost per Unit (₹) *</label>
+              <input type="number" id="cost" min="0" step="0.01" placeholder="e.g., 500" required>
+            </div>
+
+            <div class="form-group">
+              <label for="payment">Mode of Payment *</label>
+              <select id="payment" required>
+                <option value="">Select Payment Mode</option>
+                <option value="Cash">Cash</option>
+                <option value="Debit Card">Debit Card</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Cheque">Cheque</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="date">Date *</label>
+              <input type="date" id="date" required>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn-primary">Add Expense</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Summary Section -->
+      <section class="summary-section">
+        <h2>Summary by Room</h2>
+        <div id="summaryContainer" class="summary-grid">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Expenses Table Section -->
+      <section class="table-section">
+        <div class="table-header">
+          <h2>All Expenses</h2>
+          <div class="filter-controls">
+            <input type="text" id="filterRoom" placeholder="Filter by Room..." class="filter-input">
+            <button id="exportBtn" class="btn-secondary">📥 Export to CSV</button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="expensesTable" class="expenses-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Room</th>
+                <th>Category</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Cost/Unit (₹)</th>
+                <th>Total (₹)</th>
+                <th>Payment</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6" class="total-label">Grand Total:</td>
+                <td class="total-amount" id="grandTotal">₹0.00</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Edit Expense</h2>
+      <form id="editForm" class="expense-form">
+        <input type="hidden" id="editId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editRoom">Room</label>
+            <input type="text" id="editRoom" required>
+          </div>
+          <div class="form-group">
+            <label for="editCategory">Category</label>
+            <select id="editCategory" required>
+              <option value="">Select Category</option>
+              <option value="Flooring">Flooring</option>
+              <option value="Painting">Painting</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Plumbing">Plumbing</option>
+              <option value="Fixtures">Fixtures & Fittings</option>
+              <option value="Tiles">Tiles & Stones</option>
+              <option value="Doors & Windows">Doors & Windows</option>
+              <option value="Labor">Labor</option>
+              <option value="Material">Material</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editItem">Item Description</label>
+            <input type="text" id="editItem" required>
+          </div>
+          <div class="form-group">
+            <label for="editQty">Quantity</label>
+            <input type="number" id="editQty" min="1" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editCost">Cost per Unit (₹)</label>
+            <input type="number" id="editCost" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="editPayment">Mode of Payment</label>
+            <select id="editPayment" required>
+              <option value="">Select Payment Mode</option>
+              <option value="Cash">Cash</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Cheque">Cheque</option>
+              <option value="UPI">UPI</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editDate">Date</label>
+            <input type="date" id="editDate" required>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn-primary">Update Expense</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
