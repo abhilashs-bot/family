@@ -102,6 +102,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  width: 100%;
 }
 
 .room-btn {
@@ -113,14 +114,16 @@ main {
   font-size: 0.9em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
-  flex: 1;
-  min-width: 120px;
+  transition: all 0.3s ease;
+  min-width: 110px;
+  text-align: center;
+  display: inline-block;
 }
 
 .room-btn:hover {
   border-color: #667eea;
   color: #667eea;
+  background-color: #f0f4ff;
 }
 
 .room-btn.active {
