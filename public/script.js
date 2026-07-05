@@ -1,6 +1,16 @@
 // API Base URL
 const API_URL = 'http://localhost:3000/api';
 
+// Room options
+const ROOMS = [
+  'Master Bedroom',
+  'Children Bedroom',
+  'Guest Bedroom',
+  'Kitchen',
+  'Common Bath Room',
+  'Attached Bath Room'
+];
+
 // DOM Elements
 const expenseForm = document.getElementById('expenseForm');
 const tableBody = document.getElementById('tableBody');
@@ -11,16 +21,78 @@ const editModal = document.getElementById('editModal');
 const editForm = document.getElementById('editForm');
 const closeModal = document.querySelector('.close');
 const summaryContainer = document.getElementById('summaryContainer');
+const roomButtons = document.getElementById('roomButtons');
+const editRoomButtons = document.getElementById('editRoomButtons');
 
 let expenses = [];
 let filteredExpenses = [];
+let selectedRooms = [];
+let editSelectedRooms = [];
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
   setDefaultDate();
+  createRoomButtons();
+  createEditRoomButtons();
   loadExpenses();
   setupEventListeners();
 });
+
+// Create room buttons for form
+function createRoomButtons() {
+  roomButtons.innerHTML = '';
+  ROOMS.forEach(room => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'room-btn';
+    button.textContent = room;
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleRoomSelection(room, button, 'main');
+    });
+    roomButtons.appendChild(button);
+  });
+}
+
+// Create room buttons for edit modal
+function createEditRoomButtons() {
+  editRoomButtons.innerHTML = '';
+  ROOMS.forEach(room => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'room-btn';
+    button.textContent = room;
+    button.id = `edit-room-${room}`;
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleRoomSelection(room, button, 'edit');
+    });
+    editRoomButtons.appendChild(button);
+  });
+}
+
+// Toggle room selection
+function toggleRoomSelection(room, button, mode) {
+  if (mode === 'main') {
+    if (selectedRooms.includes(room)) {
+      selectedRooms = selectedRooms.filter(r => r !== room);
+      button.classList.remove('active');
+    } else {
+      selectedRooms.push(room);
+      button.classList.add('active');
+    }
+    document.getElementById('room').value = selectedRooms.join(', ');
+  } else if (mode === 'edit') {
+    if (editSelectedRooms.includes(room)) {
+      editSelectedRooms = editSelectedRooms.filter(r => r !== room);
+      button.classList.remove('active');
+    } else {
+      editSelectedRooms.push(room);
+      button.classList.add('active');
+    }
+    document.getElementById('editRoom').value = editSelectedRooms.join(', ');
+  }
+}
 
 // Set today's date as default
 function setDefaultDate() {
@@ -61,26 +133,17 @@ async function loadExpenses() {
   }
 }
 
-// Get selected rooms from multi-select dropdown
-function getSelectedRooms() {
-  const roomSelect = document.getElementById('room');
-  const selectedOptions = Array.from(roomSelect.selectedOptions);
-  return selectedOptions.map(option => option.value).join(', ');
-}
-
 // Add new expense
 async function addExpense(e) {
   e.preventDefault();
 
-  const selectedRooms = getSelectedRooms();
-  
-  if (!selectedRooms) {
+  if (selectedRooms.length === 0) {
     showNotification('Please select at least one room', 'error');
     return;
   }
 
   const expense = {
-    room: selectedRooms,
+    room: selectedRooms.join(', '),
     category: document.getElementById('category').value,
     item: document.getElementById('item').value,
     qty: parseInt(document.getElementById('qty').value),
@@ -98,6 +161,8 @@ async function addExpense(e) {
 
     if (response.ok) {
       expenseForm.reset();
+      selectedRooms = [];
+      Array.from(roomButtons.querySelectorAll('.room-btn')).forEach(btn => btn.classList.remove('active'));
       setDefaultDate();
       loadExpenses();
       showNotification('Expense added successfully!', 'success');
@@ -114,18 +179,15 @@ async function addExpense(e) {
 async function updateExpense(e) {
   e.preventDefault();
 
-  const id = document.getElementById('editId').value;
-  const editRoomSelect = document.getElementById('editRoom');
-  const selectedOptions = Array.from(editRoomSelect.selectedOptions);
-  const selectedRooms = selectedOptions.map(option => option.value).join(', ');
-
-  if (!selectedRooms) {
+  if (editSelectedRooms.length === 0) {
     showNotification('Please select at least one room', 'error');
     return;
   }
 
+  const id = document.getElementById('editId').value;
+
   const expense = {
-    room: selectedRooms,
+    room: editSelectedRooms.join(', '),
     category: document.getElementById('editCategory').value,
     item: document.getElementById('editItem').value,
     qty: parseInt(document.getElementById('editQty').value),
@@ -143,6 +205,7 @@ async function updateExpense(e) {
 
     if (response.ok) {
       editModal.style.display = 'none';
+      editSelectedRooms = [];
       loadExpenses();
       showNotification('Expense updated successfully!', 'success');
     } else {
@@ -181,11 +244,14 @@ function editExpense(id) {
   if (expense) {
     document.getElementById('editId').value = expense.id;
     
-    // Set multi-select rooms
-    const editRoomSelect = document.getElementById('editRoom');
-    const selectedRooms = expense.room.split(', ').map(r => r.trim());
-    Array.from(editRoomSelect.options).forEach(option => {
-      option.selected = selectedRooms.includes(option.value);
+    // Reset and set edit room buttons
+    editSelectedRooms = expense.room.split(', ').map(r => r.trim());
+    Array.from(editRoomButtons.querySelectorAll('.room-btn')).forEach(btn => {
+      if (editSelectedRooms.includes(btn.textContent)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
     });
     
     document.getElementById('editCategory').value = expense.category;

@@ -97,6 +97,39 @@ main {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+/* Room Button Group */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-btn {
+  padding: 10px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex: 1;
+  min-width: 120px;
+}
+
+.room-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.room-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -367,6 +400,14 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .button-group {
+    flex-direction: column;
+  }
+
+  .room-btn {
+    width: 100%;
+  }
+
   .btn-primary {
     align-self: stretch;
   }
@@ -419,6 +460,14 @@ main {
   .form-section,
   .table-section {
     padding: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .room-btn {
+    width: 100%;
   }
 
   .expenses-table {
